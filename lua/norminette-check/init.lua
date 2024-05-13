@@ -38,11 +38,12 @@ M.NormCheck = function ()
 
 	local result = getErrors(path)
 	if result == nil then
+		M.NormClear()
 		return
 	end
 
 	if result == "" then
-		vim.fn.sign_unplace(norm_check_group)
+		M.NormClear()
 		vim.api.nvim_echo({{"Norminette is Happy", "InfoMsg"}}, true, {})
 		return
 	end
@@ -67,6 +68,8 @@ end
 
 -- clear the current sign list
 M.NormClear = function ()
+	local buffnr = vim.api.nvim_get_current_buf()
+	errors[buffnr] = nil
 	vim.fn.sign_unplace(norm_check_group)
 end
 
