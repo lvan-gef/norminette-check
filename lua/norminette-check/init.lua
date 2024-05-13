@@ -1,22 +1,65 @@
--- Prevent the plugin from being loaded more than once
-if vim.g.loaded_codamnormcheck then
-    return
+vim.fn.system("norminette --version")
+if vim.v.shell_error ~= 0 then
+	vim.api.nvim_echo({{"Norminette is not on PATH", "ErrorMsg"}}, true, {})
+	return
 end
 
--- check if norminette can called at all
-local handle = io.popen("norminette")
-if not handle then
-    vim.api.nvim_err_writeln("Failed to execute 'norminette'.")
-    return
+local M = {}
+
+-- set global group and sign
+local norm_check_group = "CodamNormCheckGroup"
+local norm_check_error = "CodamNormCheckError"
+vim.fn.sign_define(norm_check_error, {text = ">>", texthl = "Error", linehl = "", numhl = ""})
+
+local getErrors = function(path)
+	local norminette_output = vim.fn.system("norminette " .. vim.fn.shellescape(path))
+    if vim.v.shell_error == 0 then
+		return ""
+	end
+
+	local command = "echo " .. vim.fn.shellescape(norminette_output) .. " | grep -E '^(Error|Notice)' | uniq | sed -n 's/.*line: *\\([0-9]*\\), col: *\\([0-9]*\\).*:\\t\\(.*\\)/\\1:\\2:\\3/p'"
+	local output = vim.fn.system(command)
+	if vim.v.shell_error ~= 0 then
+		vim.api.nvim_echo({{"Something went wrong while parsing the output...", "ErrorMsg"}}, true, {})
+		return nil
+	end
+
+	return output
 end
 
--- read output of the command, and check it was succesfull
-local result = handle:read("*a")
-handle:close()
-if not result or result == "" or result:find("command not found") then
-    vim.api.nvim_echo({{"Norminette is not installed or not in PATH.", "ErrorMsg"}}, true, {})
-    return
+-- run's norminette and add the result to neovim
+M.NormCheck = function ()
+	local buffnr = vim.api.nvim_get_current_buf()
+	local path = vim.api.nvim_buf_get_name(buffnr)
+	local errors = {}
+
+	local result = getErrors(path)
+	if result == nil then
+		return
+	end
+
+	if result == "" then
+		vim.fn.sign_unplace(norm_check_group)
+		vim.api.nvim_echo({{"Norminette is Happy", "InfoMsg"}}, true, {})
+		return
+	end
+
+	-- add errors to the table
+	for line in result:gmatch("[^\r\n]+") do
+		local lnum, col, msg = line:match("(%d+):(%d+):(.+)")
+		if lnum and col and msg then
+			table.insert(errors, {lnum = tonumber(lnum), col = tonumber(col), text = msg})
+		end
+	end
+
+	-- clear prev state and insert new state
+	vim.fn.sign_unplace(norm_check_group)
+	for _, err in ipairs(errors) do
+		vim.fn.sign_place(0, norm_check_group, norm_check_error, buffnr, {
+			lnum = err.lnum,
+			priority = 100
+		})
+	end
 end
 
--- Set the flag indicating that Norminette is loaded and available
-vim.g.loaded_codamnormcheck = 1
+return M
