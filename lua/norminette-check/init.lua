@@ -4,7 +4,6 @@ if vim.v.shell_error ~= 0 then
 	return
 end
 
-local utils = require("norminette-check.utils")
 local M = {}
 
 -- set global group and sign
@@ -55,7 +54,7 @@ M.NormCheck = function ()
 			table.insert(tmp_errors, {lnum = tonumber(lnum), col = tonumber(col), text = msg, buffnr = buffnr})
 		end
 	end
-	errors[buffnr] = utils.uniqTables(tmp_errors, errors[buffnr])
+	errors[buffnr] = tmp_errors
 
 	vim.fn.sign_unplace(norm_check_group)
 	for _, err in ipairs(errors[buffnr]) do
