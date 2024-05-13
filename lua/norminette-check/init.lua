@@ -11,6 +11,11 @@ local getErrors = function(path)
 		return ""
 	end
 
+	if vim.v.shell_error == 127 then
+		vim.api.nvim_echo({{"Norminette is not on PATH", "ErrorMsg"}}, true, {})
+		return
+	end
+
 	local command = "echo " .. vim.fn.shellescape(output) .. " | grep -E '^(Error|Notice)' | uniq | sed -n 's/.*line: *\\([0-9]*\\), col: *\\([0-9]*\\).*:\\t\\(.*\\)/\\1:\\2:\\3/p'"
 	output = vim.fn.system(command)
 	if vim.v.shell_error ~= 0 then
