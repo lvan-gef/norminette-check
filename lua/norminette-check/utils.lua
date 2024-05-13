@@ -4,6 +4,7 @@ local function tablesAreEqual(t1, t2)
     if t1 == t2 then
 		return true
 	end
+
     if type(t1) ~= "table" or type(t2) ~= "table" then
 		return false
 	end
