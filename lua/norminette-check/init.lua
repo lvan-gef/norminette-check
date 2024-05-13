@@ -54,9 +54,9 @@ M.NormCheck = function ()
 			table.insert(tmp_errors, {lnum = tonumber(lnum), col = tonumber(col), text = msg, buffnr = buffnr})
 		end
 	end
+	M.NormClear()
 	errors[buffnr] = tmp_errors
 
-	vim.fn.sign_unplace(norm_check_group)
 	for _, err in ipairs(errors[buffnr]) do
 		vim.fn.sign_place(0, norm_check_group, norm_check_error, err.buffnr, {
 			lnum = err.lnum,
