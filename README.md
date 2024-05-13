@@ -1,6 +1,6 @@
-# CodamNormCheck.nvim
+# Norminette-check
 
-CodamNormCheck.nvim is a Neovim plugin that integrates `norminette` to check for norm errors in your code. It highlights errors directly in the editor and provides commands to manage and view these errors.
+Norminette-check is a Neovim plugin that integrates `norminette` to check for norm errors in your code. It highlights errors directly in the editor and provides commands to manage and view these errors.
 
 ## Features
 
