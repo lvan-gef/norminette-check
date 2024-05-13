@@ -62,4 +62,9 @@ M.NormCheck = function ()
 	end
 end
 
+-- clear the current sign list
+M.NormClear = function ()
+	vim.fn.sign_unplace(norm_check_group)
+end
+
 return M
