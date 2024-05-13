@@ -88,4 +88,8 @@ M.NormShow = function ()
 	end
 end
 
+vim.api.nvim_create_user_command('NormCheck', M.NormCheck, {})
+vim.api.nvim_create_user_command('NormClear', M.NormClear, {})
+vim.api.nvim_create_user_command('NormShow', M.NormShow, {})
+
 return M
