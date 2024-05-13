@@ -27,11 +27,12 @@ local getErrors = function(path)
 	return output
 end
 
+local errors = {}
+
 -- run's norminette and add the result to neovim
 M.NormCheck = function ()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
-	local errors = {}
 
 	local result = getErrors(path)
 	if result == nil then
@@ -65,6 +66,15 @@ end
 -- clear the current sign list
 M.NormClear = function ()
 	vim.fn.sign_unplace(norm_check_group)
+end
+
+-- echo the message backout
+M.NormShow = function ()
+	for _, err in ipairs(errors) do
+		if err[1] == 1 then
+			vim.api.nvim_echo({{err[3], "InfoMsg"}}, true, {})
+		end
+	end
 end
 
 return M
