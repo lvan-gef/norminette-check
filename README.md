@@ -13,3 +13,9 @@ Norminette-check is a Neovim plugin that integrates `norminette` to check for no
 - Neovim 0.5.0 or later.
 - `norminette` must be installed and available in your `PATH`.
 
+## Usage
+- The plugin provides the following commands:
+
+- :NormCheck - Run norminette on the current buffer and highlight errors.
+- :NormClear - Clear all norm error highlights.
+- :NormShow - Show the norm error message for the current line in the command line.
