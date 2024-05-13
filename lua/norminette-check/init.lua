@@ -70,8 +70,10 @@ end
 
 -- echo the message backout
 M.NormShow = function ()
+	local cursor_pos = vim.api.nvim_win_get_cursor(0)
+
 	for _, err in ipairs(errors) do
-		if err[1] == 1 then
+		if err[1] == cursor_pos then
 			vim.api.nvim_echo({{err[3], "InfoMsg"}}, true, {})
 		end
 	end
