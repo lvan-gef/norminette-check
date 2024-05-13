@@ -1,9 +1,3 @@
-vim.fn.system("norminette --version")
-if vim.v.shell_error ~= 0 then
-	vim.api.nvim_echo({{"Norminette is not on PATH", "ErrorMsg"}}, true, {})
-	return
-end
-
 local M = {}
 
 -- set global group and sign
