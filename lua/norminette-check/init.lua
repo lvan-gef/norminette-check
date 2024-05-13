@@ -80,7 +80,7 @@ M.NormShow = function ()
 	end
 
 	for _, err in ipairs(errors[buffnr]) do
-		if err.lnum == row and err.buffnr == buffnr then
+		if err.lnum == row then
 			vim.api.nvim_echo({{err.text, "InfoMsg"}}, true, {})
 			break
 		end
