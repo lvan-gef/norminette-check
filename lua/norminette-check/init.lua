@@ -1,5 +1,5 @@
 local qf = require("norminette-check.qf_helpers")
-local plugin = "norminette"
+local plugin_id = "norminette"
 local M = {}
 
 ---Run's norminette and return the errors
@@ -56,13 +56,20 @@ M.NormCheck = function()
 	-- add errors to qf-list
 end
 
---- clear the current sign list
+--- clear errors from the qf-list given the filename
 M.NormClear = function()
+	local buffnr = vim.api.nvim_get_current_buf()
+	-- remove all norminette from qf-list
+end
+
+--- clear all errors from the qf-list
+M.NormAllClear = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	-- remove all norminette from qf-list
 end
 
 vim.api.nvim_create_user_command("NormCheck", M.NormCheck, {})
 vim.api.nvim_create_user_command("NormClear", M.NormClear, {})
+vim.api.nvim_create_user_command("NormAllClear", M.NormAllClear, {})
 
 return M
