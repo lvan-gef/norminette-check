@@ -1,3 +1,5 @@
+local qf = require("norminette-check.qf_helpers")
+local plugin = "norminette"
 local M = {}
 
 ---Run's norminette and return the errors
@@ -30,6 +32,7 @@ end
 M.NormCheck = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
+	local name = path:match("(.+)%..+")
 
 	local result = getErrors(path)
 	if result == nil then
