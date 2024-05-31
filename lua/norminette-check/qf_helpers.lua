@@ -16,6 +16,7 @@ local function entry_exists(entry, qflist, plug_id)
 			return true
 		end
 	end
+
 	return false
 end
 
