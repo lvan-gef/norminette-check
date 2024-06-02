@@ -60,7 +60,8 @@ end
 --- clear errors from the qf-list given the filename
 M.NormClear = function()
 	local buffnr = vim.api.nvim_get_current_buf()
-	local name = vim.api.nvim_buf_get_name(buffnr):match("(.+)%..+")
+	local path = vim.api.nvim_buf_get_name(buffnr)
+	local name = path:match("(.+)%..+")
 	qf.clear_errors(plug_id, name)
 end
 
