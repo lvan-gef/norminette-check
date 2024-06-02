@@ -32,7 +32,7 @@ end
 M.NormCheck = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
-	local name = path:match("(.+)%..+")
+	local name = vim.fn.fnamemodify(path, ":t:r")
 
 	if name == nil then
 		return
@@ -54,7 +54,7 @@ M.NormCheck = function()
 	for line in result:gmatch("[^\r\n]+") do
 		local lnum, col, msg = line:match("(%d+):(%d+):(.+)")
 		if lnum and col and msg then
-			table.insert(tmp_errors, { lnum = tonumber(lnum), col = tonumber(col), text = msg, buffnr = buffnr })
+			table.insert(tmp_errors, { filename = path, lnum = tonumber(lnum), col = tonumber(col), text = msg })
 		end
 	end
 
@@ -66,9 +66,11 @@ M.NormClear = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
 	local name = vim.fn.fnamemodify(path, ":t"):match("(.+)%..+$")
+
 	if name == nil then
 		return
 	end
+
 	qf.clear_errors(plug_id, name)
 end
 
@@ -77,6 +79,7 @@ M.NormAllClear = function()
 	qf.clear_all_errors(plug_id)
 end
 
+-- user commands
 vim.api.nvim_create_user_command("NormCheck", M.NormCheck, {})
 vim.api.nvim_create_user_command("NormClear", M.NormClear, {})
 vim.api.nvim_create_user_command("NormClearAll", M.NormAllClear, {})
