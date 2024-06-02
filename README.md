@@ -1,21 +1,23 @@
 # Norminette-check
 
-Norminette-check is a Neovim plugin that integrates `norminette` to check for norm errors in your code. It highlights errors directly in the editor and provides commands to manage and view these errors.
+This Neovim plugin integrates Norminette, a coding standard verification tool for C projects, with Neovim's quickfix list. It provides commands to check code against Norminette standards and manage the resulting errors in the quickfix list.
 
 ## Features
 
-- Run `norminette` on the current buffer.
-- Highlight norm errors in the code.
-- Display error messages in the Neovim command line.
+- Run Norminette and display errors in the quickfix list.
+- Clear errors from the quickfix list for the current file.
+- Clear all errors from the quickfix list.
+
+## Commands
+- :NormCheck - Run Norminette on the current file and display errors in the quickfix list.
+- :NormClear - Clear Norminette errors from the quickfix list for the current file.
+- :NormClearAll - Clear all Norminette errors from the quickfix list.
 
 ## Requirements
 
-- Neovim 0.5.0 or later.
 - `norminette` must be installed and available in your `PATH`.
 
 ## Usage
-- The plugin provides the following commands:
-
-- :NormCheck - Run norminette on the current buffer and highlight errors.
-- :NormClear - Clear all norm error highlights.
-- :NormShow - Show the norm error message for the current line in the command line.
+- Run :NormCheck to check the file with Norminette. Any errors will be displayed in the quickfix list.
+- To clear errors for the current file, run :NormClear.
+- To clear all Norminette errors from the quickfix list, run :NormClearAll.
