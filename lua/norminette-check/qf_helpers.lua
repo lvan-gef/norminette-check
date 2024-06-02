@@ -52,7 +52,7 @@ qf.clear_errors = function(plug_id, name)
 	local new_qflist = {}
 
 	for _, entry in ipairs(cur_qflist) do
-		if not string.match(entry.text, "%[" .. name .. "_" .. plug_id .. "%]$") then
+		if not string.match(entry.text, name .. "_" .. plug_id .. "]$") then
 			table.insert(new_qflist, entry)
 		end
 	end
@@ -67,7 +67,7 @@ qf.clear_all_errors = function(plug_id)
 	local new_qflist = {}
 
 	for _, entry in ipairs(cur_qflist) do
-		if not string.match(entry.text, "%[" .. plug_id .. "%]$") then
+		if not string.match(entry.text, plug_id .. "]$") then
 			table.insert(new_qflist, entry)
 		end
 	end

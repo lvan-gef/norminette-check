@@ -34,6 +34,10 @@ M.NormCheck = function()
 	local path = vim.api.nvim_buf_get_name(buffnr)
 	local name = path:match("(.+)%..+")
 
+	if name == nil then
+		return
+	end
+
 	local result = getErrors(path)
 	if result == nil then
 		M.NormClear()
@@ -61,7 +65,10 @@ end
 M.NormClear = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
-	local name = path:match("^.+/(.+)$")
+	local name = vim.fn.fnamemodify(path, ":t"):match("(.+)%..+$")
+	if name == nil then
+		return
+	end
 	qf.clear_errors(plug_id, name)
 end
 
