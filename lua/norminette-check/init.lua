@@ -61,7 +61,7 @@ end
 M.NormClear = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
-	local name = path:match("(.+)%..+")
+	local name = path:match("^.+/(.+)$")
 	qf.clear_errors(plug_id, name)
 end
 
