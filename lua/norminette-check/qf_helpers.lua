@@ -7,12 +7,7 @@ local qf = {}
 ---@return boolean
 local function entry_exists(entry, qflist, plug_id)
 	for _, qf_entry in ipairs(qflist) do
-		if
-			qf_entry.filename == entry.filename
-			and qf_entry.lnum == entry.lnum
-			and qf_entry.col == entry.col
-			and string.match(qf_entry.text, plug_id .. "%]$")
-		then
+		if qf_entry.filename == entry.filename and qf_entry.lnum == entry.lnum and qf_entry.col == entry.col then
 			return true
 		end
 	end
