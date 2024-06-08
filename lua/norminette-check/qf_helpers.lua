@@ -11,7 +11,7 @@ local function entry_exists(entry, qflist, plug_id)
 			qf_entry.filename == entry.filename
 			and qf_entry.lnum == entry.lnum
 			and qf_entry.col == entry.col
-			and string.match(qf_entry.text, "%[" .. plug_id .. "%]$")
+			and string.match(qf_entry.text, plug_id .. "%]$")
 		then
 			return true
 		end
@@ -29,7 +29,7 @@ qf.append_errors = function(err_list, plug_id, name)
 	local new_qflist = {}
 
 	for _, entry in ipairs(cur_qflist) do
-		if not string.match(entry.text, "%[" .. plug_id .. "%]$") then
+		if not string.match(entry.text, plug_id .. "%]$") then
 			table.insert(new_qflist, entry)
 		end
 	end
