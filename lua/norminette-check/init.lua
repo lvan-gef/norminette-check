@@ -2,66 +2,87 @@ local qf = require("norminette-check.qf_helpers")
 local plug_id = "norminette"
 local M = {}
 
---- Run's norminette and return the errors
---- @param path string
---- @return string | nil
+---Run's norminette and return the errors
+---@param path string
+---@return table | nil
 local getErrors = function(path)
-	local output = vim.fn.system("norminette " .. vim.fn.shellescape(path))
-	if vim.v.shell_error == 0 then
-		return ""
-	end
+	local output = vim.fn.system("norminette " .. vim.fn.shellescape(path) .. " 2>&1")
+	local status = vim.v.shell_error
 
-	if vim.v.shell_error == 127 then
+	if status == 127 then
 		vim.api.nvim_echo({ { "Norminette is not on PATH", "ErrorMsg" } }, true, {})
-		return
-	end
-
-	local command = "echo "
-		.. vim.fn.shellescape(output)
-		.. " | grep -E '^(Error|Notice)' | uniq | sed -n 's/.*line: *\\([0-9]*\\), col: *\\([0-9]*\\).*:\\t\\(.*\\)/\\1:\\2:\\3/p'"
-	output = vim.fn.system(command)
-	if vim.v.shell_error ~= 0 then
-		vim.api.nvim_echo({ { "Something went wrong while parsing the output...", "ErrorMsg" } }, true, {})
+		return nil
+	elseif status == 0 then
+		vim.api.nvim_echo({ { "Norminette is Happy", "InfoMsg" } }, true, {})
 		return nil
 	end
 
-	return output
+	output = output:gsub("\r\n", "\n"):gsub("\r", "\n")
+	local errors = {}
+	for line in output:gmatch("[^\n]+") do
+		if not line:match("^Error") and not line:match("^Notice") then
+			goto continue
+		end
+
+		local lnum, col, txt = line:match(".*line: *(%d+), col: *(%d+).*:\t(.*)")
+
+		local lnum_int = tonumber(lnum)
+		if lnum_int == nil then
+			vim.api.nvim_echo({ { "Not a valid line number: " .. line, "ErrorMsg" } }, true, {})
+			return nil
+		end
+
+		local col_int = tonumber(col)
+		if lnum_int == nil then
+			vim.api.nvim_echo({ { "Not a valid col number: " .. line, "ErrorMsg" } }, true, {})
+			return nil
+		end
+
+		if txt == nil then
+			vim.api.nvim_echo({ { "No message by a error: " .. line, "ErrorMsg" } }, true, {})
+			return nil
+		end
+
+		table.insert(errors, {
+			filename = path,
+			lnum = lnum_int,
+			col = col_int,
+			text = txt,
+		})
+
+		::continue::
+	end
+
+	if #errors == 0 then
+		return nil
+	end
+
+	return errors
 end
 
---- run's norminette and add errors to the quickfix list
+---run's norminette and add errors to the quickfix list
 M.NormCheck = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
+	if path == "" then
+		return
+	end
 	local name = vim.fn.fnamemodify(path, ":t:r")
 
 	if name == nil then
 		return
 	end
 
-	local result = getErrors(path)
-	if result == nil then
+	local errors = getErrors(path)
+	if errors == nil then
 		M.NormClear()
 		return
 	end
 
-	if result == "" then
-		M.NormClear()
-		vim.api.nvim_echo({ { "Norminette is Happy", "InfoMsg" } }, true, {})
-		return
-	end
-
-	local tmp_errors = {}
-	for line in result:gmatch("[^\r\n]+") do
-		local lnum, col, msg = line:match("(%d+):(%d+):(.+)")
-		if lnum and col and msg then
-			table.insert(tmp_errors, { filename = path, lnum = tonumber(lnum), col = tonumber(col), text = msg })
-		end
-	end
-
-	qf.append_errors(tmp_errors, plug_id, name)
+	qf.append_errors(errors, plug_id, name)
 end
 
---- clear errors from the qf-list given the filename
+---clear errors from the qf-list given the filename
 M.NormClear = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
@@ -74,14 +95,14 @@ M.NormClear = function()
 	qf.clear_errors(plug_id, name)
 end
 
---- clear all errors from the qf-list
-M.NormAllClear = function()
+---clear all errors from the qf-list
+M.NormClearAll = function()
 	qf.clear_all_errors(plug_id)
 end
 
 -- user commands
 vim.api.nvim_create_user_command("NormCheck", M.NormCheck, {})
 vim.api.nvim_create_user_command("NormClear", M.NormClear, {})
-vim.api.nvim_create_user_command("NormClearAll", M.NormAllClear, {})
+vim.api.nvim_create_user_command("NormClearAll", M.NormClearAll, {})
 
 return M
