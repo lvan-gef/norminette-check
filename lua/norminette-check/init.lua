@@ -3,8 +3,8 @@ local plug_id = "norminette"
 local M = {}
 
 ---Run's norminette and return the errors
----@param path string
----@return string | nil
+--- @param path string
+--- @return string | nil
 local getErrors = function(path)
 	local output = vim.fn.system("norminette " .. vim.fn.shellescape(path))
 	if vim.v.shell_error == 0 then
