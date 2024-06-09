@@ -2,7 +2,7 @@ local qf = require("norminette-check.qf_helpers")
 local plug_id = "norminette"
 local M = {}
 
----Run's norminette and return the errors
+--- Run's norminette and return the errors
 --- @param path string
 --- @return string | nil
 local getErrors = function(path)
