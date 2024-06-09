@@ -1,9 +1,9 @@
 local qf = {}
 
---- Check if error is in qflist
---- @param entry   table  The new errors
---- @param qflist  table  The current qf-list
---- @return boolean
+---Check if error is in qflist
+---@param entry   table  The new errors
+---@param qflist  table  The current qf-list
+---@return boolean
 local function entry_exists(entry, qflist)
 	for _, qf_entry in ipairs(qflist) do
 		if qf_entry.filename == entry.filename and qf_entry.lnum == entry.lnum and qf_entry.col == entry.col then
@@ -14,10 +14,10 @@ local function entry_exists(entry, qflist)
 	return false
 end
 
---- Append errors to the quickfix list with a unique plugin identifier.
---- @param err_list table  A list of error entries to append.
---- @param plug_id  string The unique identifier for the plugin.
---- @param name     string The filename without extension
+---Append errors to the quickfix list with a unique plugin identifier.
+---@param err_list table  A list of error entries to append.
+---@param plug_id  string The unique identifier for the plugin.
+---@param name     string The filename without extension
 qf.append_errors = function(err_list, plug_id, name)
 	local cur_qflist = vim.fn.getqflist()
 	local new_qflist = {}
@@ -38,9 +38,9 @@ qf.append_errors = function(err_list, plug_id, name)
 	vim.fn.setqflist(new_qflist, "r")
 end
 
---- Clear errors from the quickfix list given the filename
---- @param plug_id string The unique identifier for the plugin.
---- @param name    string The filename without extension
+---Clear errors from the quickfix list given the filename
+---@param plug_id string The unique identifier for the plugin.
+---@param name    string The filename without extension
 qf.clear_errors = function(plug_id, name)
 	local cur_qflist = vim.fn.getqflist()
 	local new_qflist = {}
@@ -54,8 +54,8 @@ qf.clear_errors = function(plug_id, name)
 	vim.fn.setqflist(new_qflist, "r")
 end
 
---- Clear all errors from the quickfix list
---- @param plug_id string The unique identifier for the plugin.
+---Clear all errors from the quickfix list
+---@param plug_id string The unique identifier for the plugin.
 qf.clear_all_errors = function(plug_id)
 	local cur_qflist = vim.fn.getqflist()
 	local new_qflist = {}
