@@ -12,9 +12,6 @@ local getErrors = function(path)
 	if status == 127 then
 		vim.api.nvim_echo({ { "Norminette is not on PATH", "ErrorMsg" } }, true, {})
 		return nil
-	elseif status == 0 then
-		vim.api.nvim_echo({ { "Norminette is Happy", "InfoMsg" } }, true, {})
-		return nil
 	end
 
 	output = output:gsub("\r\n", "\n"):gsub("\r", "\n")
@@ -51,6 +48,11 @@ local getErrors = function(path)
 		})
 
 		::continue::
+	end
+
+	if status == 0 and #errors == 0 then
+		vim.api.nvim_echo({ { "Norminette is Happy", "InfoMsg" } }, true, {})
+		return nil
 	end
 
 	if #errors == 0 then
