@@ -86,6 +86,9 @@ end
 M.NormClear = function()
 	local buffnr = vim.api.nvim_get_current_buf()
 	local path = vim.api.nvim_buf_get_name(buffnr)
+	if path == "" then
+		return
+	end
 	local name = vim.fn.fnamemodify(path, ":t"):match("(.+)%..+$")
 
 	if name == nil then
