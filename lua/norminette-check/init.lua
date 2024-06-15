@@ -1,3 +1,15 @@
+-- ************************************************************************** --
+--                                                                            --
+--                                                        ::::::::            --
+--   init.lua                                           :+:    :+:            --
+--                                                     +:+                    --
+--   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     --
+--                                                   +#+                      --
+--   Created: 2024/06/15 22:02:34 by lvan-gef      #+#    #+#                 --
+--   Updated: 2024/06/15 22:02:38 by lvan-gef      ########   odam.nl         --
+--                                                                            --
+-- ************************************************************************** --
+
 local qf = require("norminette-check.qf_helpers")
 local plug_id = "norminette"
 local M = {}
