@@ -92,7 +92,7 @@ M.NormClear = function()
 	if path == "" then
 		return
 	end
-	local name = vim.fn.fnamemodify(path, ":t"):match("(.+)%..+$")
+	local name = vim.fn.fnamemodify(path, ":t:r")
 
 	if name == nil then
 		return
