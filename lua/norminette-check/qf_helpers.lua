@@ -7,13 +7,10 @@ local qf = {}
 qf.append_errors = function(err_list, plug_id, name)
 	qf.clear_errors(plug_id, name)
 
-	local cur_qflist = vim.fn.getqflist()
 	for _, entry in ipairs(err_list) do
 		entry.text = entry.text .. " [" .. name .. "_" .. plug_id .. "]"
-		table.insert(cur_qflist, entry)
+		vim.fn.setqflist(entry, "a")
 	end
-
-	vim.fn.setqflist(cur_qflist, "r")
 end
 
 ---Clear errors from the quickfix list given the filename
