@@ -56,6 +56,7 @@ local getErrors = function(path)
 	end
 
 	if #errors == 0 then
+		vim.api.nvim_echo({ { "Norminette exit code: " .. status .. ".\nBut we have " .. #errors .. "error's", "ErrorMsg" } }, true, {})
 		return nil
 	end
 
