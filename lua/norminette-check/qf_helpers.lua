@@ -9,7 +9,7 @@ qf.append_errors = function(err_list, plug_id, name)
 
 	for _, entry in ipairs(err_list) do
 		entry.text = entry.text .. " [" .. name .. "_" .. plug_id .. "]"
-		vim.fn.setqflist(entry, "a")
+		vim.fn.setqflist({ entry }, "a")
 	end
 end
 
