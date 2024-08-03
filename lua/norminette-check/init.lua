@@ -5,7 +5,7 @@ local M = {}
 ---Run's norminette and return the errors
 ---@param path string
 ---@return table | nil
-local getErrors = function(path)
+local parseNorminette = function(path)
 	local output = vim.fn.system("norminette " .. vim.fn.shellescape(path) .. " 2>&1")
 	local status = vim.v.shell_error
 
@@ -55,7 +55,7 @@ local getErrors = function(path)
 		return nil
 	end
 
-	if #errors == 0 then
+	if status == 0 and #errors ~= 0 then
 		vim.api.nvim_echo({ { "Norminette exit code: " .. status .. ".\nBut we have " .. #errors .. "error's", "ErrorMsg" } }, true, {})
 		return nil
 	end
@@ -76,7 +76,7 @@ M.NormCheck = function()
 		return
 	end
 
-	local errors = getErrors(path)
+	local errors = parseNorminette(path)
 	if errors == nil then
 		M.NormClear()
 		return
