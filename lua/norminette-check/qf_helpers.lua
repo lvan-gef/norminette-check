@@ -1,41 +1,19 @@
 local qf = {}
 
----Check if error is in qflist
----@param entry   table  The new errors
----@param qflist  table  The current qf-list
----@return boolean
-local function entry_exists(entry, qflist)
-	for _, qf_entry in ipairs(qflist) do
-		if qf_entry.filename == entry.filename and qf_entry.lnum == entry.lnum and qf_entry.col == entry.col then
-			return true
-		end
-	end
-
-	return false
-end
-
 ---Append errors to the quickfix list with a unique plugin identifier.
 ---@param err_list table  A list of error entries to append.
 ---@param plug_id  string The unique identifier for the plugin.
 ---@param name     string The filename without extension
 qf.append_errors = function(err_list, plug_id, name)
+	qf.clear_errors(plug_id, name)
+
 	local cur_qflist = vim.fn.getqflist()
-	local new_qflist = {}
-
-	for _, entry in ipairs(cur_qflist) do
-		if not string.match(entry.text, plug_id .. "%]$") then
-			table.insert(new_qflist, entry)
-		end
-	end
-
 	for _, entry in ipairs(err_list) do
-		if not entry_exists(entry, new_qflist) then
-			entry.text = entry.text .. " [" .. name .. "_" .. plug_id .. "]"
-			table.insert(new_qflist, entry)
-		end
+		entry.text = entry.text .. " [" .. name .. "_" .. plug_id .. "]"
+		table.insert(cur_qflist, entry)
 	end
 
-	vim.fn.setqflist(new_qflist, "r")
+	vim.fn.setqflist(cur_qflist, "r")
 end
 
 ---Clear errors from the quickfix list given the filename
