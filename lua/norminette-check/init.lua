@@ -106,9 +106,4 @@ M.NormClearAll = function()
 	qf.clear_all_errors(plug_id)
 end
 
--- user commands
-vim.api.nvim_create_user_command("NormCheck", M.NormCheck, {})
-vim.api.nvim_create_user_command("NormClear", M.NormClear, {})
-vim.api.nvim_create_user_command("NormClearAll", M.NormClearAll, {})
-
 return M
