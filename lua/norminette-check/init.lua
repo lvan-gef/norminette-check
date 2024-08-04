@@ -6,7 +6,7 @@ local normi = {}
 ---@param path string  Path to the file you want to check
 ---@return table | nil
 local parseNormi = function(path)
-	local output = vim.fn.system("norminette --use-gitignore" .. vim.fn.shellescape(path) .. " 2>&1")
+	local output = vim.fn.system("norminette " .. vim.fn.shellescape(path) .. " 2>&1")
 	local status = vim.v.shell_error
 
 	if status == 127 then
