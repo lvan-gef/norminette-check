@@ -91,10 +91,6 @@ normi.NormiClear = function()
 	if path == "" then
 		return
 	end
-<<<<<<< HEAD
-	local name = vim.fn.fnamemodify(path, ":t:r")
-=======
->>>>>>> 0.0.2
 
 	local name = vim.fn.fnamemodify(path, ":t:r")
 	if name == nil then
