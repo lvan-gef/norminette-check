@@ -1,11 +1,11 @@
 local qf = require("norminette-check.qf_helpers")
 local plug_id = "norminette"
-local M = {}
+local normi = {}
 
----Run's norminette and return the errors
----@param path string
+---Run's norminette and parse norminette
+---@param path string  Path to the file you want to check
 ---@return table | nil
-local getErrors = function(path)
+local parseNormi = function(path)
 	local output = vim.fn.system("norminette " .. vim.fn.shellescape(path) .. " 2>&1")
 	local status = vim.v.shell_error
 
@@ -55,44 +55,48 @@ local getErrors = function(path)
 		return nil
 	end
 
-	if #errors == 0 then
+	if status == 0 and #errors ~= 0 then
+		vim.api.nvim_echo(
+			{ { "Norminette exit code: " .. status .. ".\nBut we have " .. #errors .. "error's", "ErrorMsg" } }, true, {})
 		return nil
 	end
 
 	return errors
 end
 
----run's norminette and add errors to the quickfix list
-M.NormCheck = function()
-	local buffnr = vim.api.nvim_get_current_buf()
-	local path = vim.api.nvim_buf_get_name(buffnr)
+---Check for norminette errors in the current buffer
+normi.NormiCheck = function()
+	local path = vim.api.nvim_buf_get_name(0)
 	if path == "" then
 		return
 	end
-	local name = vim.fn.fnamemodify(path, ":t:r")
 
+	local name = vim.fn.fnamemodify(path, ":t:r")
 	if name == nil then
 		return
 	end
 
-	local errors = getErrors(path)
+	local errors = parseNormi(path)
 	if errors == nil then
-		M.NormClear()
+		normi.NormiClear()
 		return
 	end
 
 	qf.append_errors(errors, plug_id, name)
 end
 
----clear errors from the qf-list given the filename
-M.NormClear = function()
-	local buffnr = vim.api.nvim_get_current_buf()
-	local path = vim.api.nvim_buf_get_name(buffnr)
+---clear norminette errors from the qf-list given the current buffer
+normi.NormiClear = function()
+	local path = vim.api.nvim_buf_get_name(0)
 	if path == "" then
 		return
 	end
+<<<<<<< HEAD
 	local name = vim.fn.fnamemodify(path, ":t:r")
+=======
+>>>>>>> 0.0.2
 
+	local name = vim.fn.fnamemodify(path, ":t:r")
 	if name == nil then
 		return
 	end
@@ -100,14 +104,9 @@ M.NormClear = function()
 	qf.clear_errors(plug_id, name)
 end
 
----clear all errors from the qf-list
-M.NormClearAll = function()
+---clear all norminette errors from the qf-list
+normi.NormiClearAll = function()
 	qf.clear_all_errors(plug_id)
 end
 
--- user commands
-vim.api.nvim_create_user_command("NormCheck", M.NormCheck, {})
-vim.api.nvim_create_user_command("NormClear", M.NormClear, {})
-vim.api.nvim_create_user_command("NormClearAll", M.NormClearAll, {})
-
-return M
+return normi
