@@ -140,12 +140,12 @@ normi.NormiClearAll = function()
 end
 
 --- Disable norminette-check
-normi.NormiDisable = function ()
+normi.NormiDisable = function()
 	options.enable = false
 end
 
 --- Enable norminette-check
-normi.NormiEnable = function ()
+normi.NormiEnable = function()
 	options.enable = true
 end
 
