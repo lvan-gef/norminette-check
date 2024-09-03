@@ -97,7 +97,12 @@ normi.NormiCheck = function()
 		return
 	end
 
-	if name == ".c" or name == ".h" then
+	local ext = vim.fn.fnamemodify(path, ":e")
+	if ext == nil then
+		return
+	end
+
+	if ext == "c" or ext == "h" then
 		local errors = parseNormi(path)
 		if errors == nil then
 			normi.NormiClear()
