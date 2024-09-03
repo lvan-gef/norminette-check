@@ -2,6 +2,23 @@ local qf = require("norminette-check.qf_helpers")
 local plug_id = "norminette"
 local normi = {}
 
+--- default setting for the plugin
+local options = {
+	enable = true
+}
+
+--- Merge user settings with defaults
+--- @param opts table  The default options
+normi.setup = function(opts)
+	opts = opts or {}
+	for k, v in pairs(options) do
+		if opts[k] == nil then
+			opts[k] = v
+		end
+	end
+	options = opts
+end
+
 --- Run's norminette and parse norminette
 --- @param path string  Path to the file you want to check
 --- @return table | nil
@@ -66,6 +83,10 @@ end
 
 --- Check for norminette errors in the current buffer
 normi.NormiCheck = function()
+	if options.enable ~= true then
+		return
+	end
+
 	local path = vim.api.nvim_buf_get_name(0)
 	if path == "" then
 		return
@@ -87,6 +108,10 @@ end
 
 --- clear norminette errors from the qf-list given the current buffer
 normi.NormiClear = function()
+	if options.enable ~= true then
+		return
+	end
+
 	local path = vim.api.nvim_buf_get_name(0)
 	if path == "" then
 		return
@@ -102,7 +127,21 @@ end
 
 --- clear all norminette errors from the qf-list
 normi.NormiClearAll = function()
+	if options.enable ~= true then
+		return
+	end
+
 	qf.clear_all_errors(plug_id)
+end
+
+--- Disable norminette-check
+normi.NormiDisable = function ()
+	options.enable = false
+end
+
+--- Enable norminette-check
+normi.NormiEnable = function ()
+	options.enable = true
 end
 
 return normi
