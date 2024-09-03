@@ -2,9 +2,9 @@ local qf = require("norminette-check.qf_helpers")
 local plug_id = "norminette"
 local normi = {}
 
----Run's norminette and parse norminette
----@param path string  Path to the file you want to check
----@return table | nil
+--- Run's norminette and parse norminette
+--- @param path string  Path to the file you want to check
+--- @return table | nil
 local parseNormi = function(path)
 	local output = vim.fn.system("norminette " .. vim.fn.shellescape(path) .. " 2>&1")
 	local status = vim.v.shell_error
@@ -64,7 +64,7 @@ local parseNormi = function(path)
 	return errors
 end
 
----Check for norminette errors in the current buffer
+--- Check for norminette errors in the current buffer
 normi.NormiCheck = function()
 	local path = vim.api.nvim_buf_get_name(0)
 	if path == "" then
@@ -85,7 +85,7 @@ normi.NormiCheck = function()
 	qf.append_errors(errors, plug_id, name)
 end
 
----clear norminette errors from the qf-list given the current buffer
+--- clear norminette errors from the qf-list given the current buffer
 normi.NormiClear = function()
 	local path = vim.api.nvim_buf_get_name(0)
 	if path == "" then
@@ -100,7 +100,7 @@ normi.NormiClear = function()
 	qf.clear_errors(plug_id, name)
 end
 
----clear all norminette errors from the qf-list
+--- clear all norminette errors from the qf-list
 normi.NormiClearAll = function()
 	qf.clear_all_errors(plug_id)
 end
