@@ -97,13 +97,15 @@ normi.NormiCheck = function()
 		return
 	end
 
-	local errors = parseNormi(path)
-	if errors == nil then
-		normi.NormiClear()
-		return
-	end
+	if name == ".c" or name == ".h" then
+		local errors = parseNormi(path)
+		if errors == nil then
+			normi.NormiClear()
+			return
+		end
 
-	qf.append_errors(errors, plug_id, name)
+		qf.append_errors(errors, plug_id, name)
+	end
 end
 
 --- clear norminette errors from the qf-list given the current buffer
@@ -121,8 +123,6 @@ normi.NormiClear = function()
 	if name == nil then
 		return
 	end
-
-	qf.clear_errors(plug_id, name)
 end
 
 --- clear all norminette errors from the qf-list
