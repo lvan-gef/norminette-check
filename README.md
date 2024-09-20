@@ -1,12 +1,70 @@
-# Norminette-check
+# Norminette Checker for Neovim
 
-This Neovim plugin integrates Norminette, a coding standard verification tool for C projects, with Neovim's quickfix list. It provides commands to check code against Norminette standards and manage the resulting errors in the quickfix list.
+## Overview
+
+This plugin integrates Norminette, the coding style checker used in 42 schools, into your Neovim. It allows you to run Norminette on your .c or .h file without leaving your editor, displaying results conveniently in Neovim's quickfix list.
+
+## Features
+
+- Execute Norminette on the current buffer with a simple command
+- View Norminette errors directly in Neovim's quickfix list
+- Clear Norminette errors for the current buffer or all buffers
+- Optional automatic checks on file save
+- Enable or Disable the checker
 
 ## Requirements
 
-- `norminette` must be installed and available in your `PATH`.
+- Neovim 0.9.0 or later
+- Norminette installed and accessible in your PATH
 
-## Commands
-- :NormiCheck - Run Norminette on the current file and display errors in the quickfix list.
-- :NormiClear - Clear Norminette errors from the quickfix list for the current file.
-- :NormiClearAll - Clear all Norminette errors from the quickfix list.
+## Installation
+
+Using [lazy.nvim](https://github.com/folke/lazy.nvim):
+
+```lua
+{
+  'lvan-gef/norminette-checker',
+  config = function()
+    require('norminette-checker').setup()
+  end
+}
+```
+
+## Usage
+
+The plugin provides the following Lua functions:
+
+- `require('norminette-checker').NormiCheck()`   : Run Norminette on the current buffer
+- `require('norminette-checker').NormiClear()`   : Clear Norminette errors for the current buffer
+- `require('norminette-checker').NormiClearAll()`: Clear all Norminette errors
+- `require('norminette-checker').NormiEnable()`  : Enable checker
+- `require('norminette-checker').NormiDisable()` : Disable checker
+
+You can map these functions to keyboard shortcuts in your Neovim configuration:
+
+```lua
+vim.api.nvim_set_keymap('n', '<leader>nc', "<cmd>lua require('norminette-checker').NormiCheck()<CR>", { noremap = true, silent = true, desc = "[N]ormi [C]heck" }
+vim.api.nvim_set_keymap('n', '<leader>nr', "<cmd>lua require('norminette-checker').NormiClear()<CR>", { noremap = true, silent = true, desc = "[N]ormi [R]emove" }
+vim.api.nvim_set_keymap('n', '<leader>nra', "<cmd>lua require('norminette-checker').NormiClearAll()<CR>", { noremap = true, silent = true, desc = "[N]ormi [R]emove [A]ll" }
+vim.api.nvim_set_keymap('n', '<leader>ne', "<cmd>lua require('norminette-checker').NormiEnable()<CR>", { noremap = true, silent = true, desc = "[N]ormi [E]nable" }
+vim.api.nvim_set_keymap('n', '<leader>nd', "<cmd>lua require('norminette-checker').NormiDisable()<CR>", { noremap = true, silent = true, desc = "[N]ormi [D]isable" }
+```
+
+## Autorun on Save
+
+To automatically run Norminette when you save a file, add the following to your Neovim configuration:
+
+```lua
+vim.api.nvim_create_autocmd("BufWritePost", {
+  pattern = {"*.c", "*.h"},
+  callback = function()
+    require('norminette-checker').NormiCheck()
+  end,
+})
+```
+
+This will run the Norminette every time you save a `.c` or `.h` file.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

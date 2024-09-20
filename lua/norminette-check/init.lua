@@ -2,9 +2,27 @@ local qf = require("norminette-check.qf_helpers")
 local plug_id = "norminette"
 local normi = {}
 
----Run's norminette and parse norminette
----@param path string  Path to the file you want to check
----@return table | nil
+--- default setting for the plugin
+local options = {
+	enable = true
+}
+
+--- Merge user settings with defaults
+--- @param opts table  The default options
+normi.setup = function(opts)
+	opts = opts or {}
+	for k, v in pairs(options) do
+		if opts[k] == nil then
+			opts[k] = v
+		end
+	end
+
+	options = opts
+end
+
+--- Run's norminette and parse norminette
+--- @param path string  Path to the file you want to check
+--- @return table | nil
 local parseNormi = function(path)
 	local output = vim.fn.system("norminette " .. vim.fn.shellescape(path) .. " 2>&1")
 	local status = vim.v.shell_error
@@ -25,18 +43,18 @@ local parseNormi = function(path)
 
 		local lnum_int = tonumber(lnum)
 		if lnum_int == nil then
-			vim.api.nvim_echo({ { "Not a valid line number: " .. line, "ErrorMsg" } }, true, {})
+			vim.api.nvim_echo({ { "Parser Error: Not a valid line number: " .. line, "ErrorMsg" } }, true, {})
 			return nil
 		end
 
 		local col_int = tonumber(col)
 		if lnum_int == nil then
-			vim.api.nvim_echo({ { "Not a valid col number: " .. line, "ErrorMsg" } }, true, {})
+			vim.api.nvim_echo({ { "Parser Error: Not a valid col number: " .. line, "ErrorMsg" } }, true, {})
 			return nil
 		end
 
 		if txt == nil then
-			vim.api.nvim_echo({ { "No message by a error: " .. line, "ErrorMsg" } }, true, {})
+			vim.api.nvim_echo({ { "Parser Error: No message by a error: " .. line, "ErrorMsg" } }, true, {})
 			return nil
 		end
 
@@ -64,8 +82,12 @@ local parseNormi = function(path)
 	return errors
 end
 
----Check for norminette errors in the current buffer
+--- Check for norminette errors in the current buffer
 normi.NormiCheck = function()
+	if options.enable ~= true then
+		return
+	end
+
 	local path = vim.api.nvim_buf_get_name(0)
 	if path == "" then
 		return
@@ -76,17 +98,28 @@ normi.NormiCheck = function()
 		return
 	end
 
-	local errors = parseNormi(path)
-	if errors == nil then
-		normi.NormiClear()
+	local ext = vim.fn.fnamemodify(path, ":e")
+	if ext == nil then
 		return
 	end
 
-	qf.append_errors(errors, plug_id, name)
+	if ext == "c" or ext == "h" then
+		local errors = parseNormi(path)
+		if errors == nil then
+			normi.NormiClear()
+			return
+		end
+
+		qf.append_errors(errors, plug_id, name)
+	end
 end
 
----clear norminette errors from the qf-list given the current buffer
+--- clear norminette errors from the qf-list given the current buffer
 normi.NormiClear = function()
+	if options.enable ~= true then
+		return
+	end
+
 	local path = vim.api.nvim_buf_get_name(0)
 	if path == "" then
 		return
@@ -96,13 +129,25 @@ normi.NormiClear = function()
 	if name == nil then
 		return
 	end
-
-	qf.clear_errors(plug_id, name)
 end
 
----clear all norminette errors from the qf-list
+--- clear all norminette errors from the qf-list
 normi.NormiClearAll = function()
+	if options.enable ~= true then
+		return
+	end
+
 	qf.clear_all_errors(plug_id)
+end
+
+--- Disable norminette-check
+normi.NormiDisable = function()
+	options.enable = false
+end
+
+--- Enable norminette-check
+normi.NormiEnable = function()
+	options.enable = true
 end
 
 return normi
