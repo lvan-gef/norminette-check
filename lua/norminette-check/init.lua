@@ -16,6 +16,7 @@ normi.setup = function(opts)
 			opts[k] = v
 		end
 	end
+
 	options = opts
 end
 
@@ -42,18 +43,18 @@ local parseNormi = function(path)
 
 		local lnum_int = tonumber(lnum)
 		if lnum_int == nil then
-			vim.api.nvim_echo({ { "Not a valid line number: " .. line, "ErrorMsg" } }, true, {})
+			vim.api.nvim_echo({ { "Parser Error: Not a valid line number: " .. line, "ErrorMsg" } }, true, {})
 			return nil
 		end
 
 		local col_int = tonumber(col)
 		if lnum_int == nil then
-			vim.api.nvim_echo({ { "Not a valid col number: " .. line, "ErrorMsg" } }, true, {})
+			vim.api.nvim_echo({ { "Parser Error: Not a valid col number: " .. line, "ErrorMsg" } }, true, {})
 			return nil
 		end
 
 		if txt == nil then
-			vim.api.nvim_echo({ { "No message by a error: " .. line, "ErrorMsg" } }, true, {})
+			vim.api.nvim_echo({ { "Parser Error: No message by a error: " .. line, "ErrorMsg" } }, true, {})
 			return nil
 		end
 
