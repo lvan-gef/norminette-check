@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Neovim plugin seamlessly integrates Norminette, the coding style checker used in 42 schools, into your Neovim workflow. It allows you to run Norminette on your .c or .h file without leaving your editor, displaying results conveniently in Neovim's quickfix list.
+This plugin integrates Norminette, the coding style checker used in 42 schools, into your Neovim. It allows you to run Norminette on your .c or .h file without leaving your editor, displaying results conveniently in Neovim's quickfix list.
 
 ## Features
 
@@ -14,7 +14,7 @@ This Neovim plugin seamlessly integrates Norminette, the coding style checker us
 
 ## Requirements
 
-- Neovim 0.5.0 or later
+- Neovim 0.9.0 or later
 - Norminette installed and accessible in your PATH
 
 ## Installation
@@ -56,7 +56,7 @@ To automatically run Norminette when you save a file, add the following to your 
 
 ```lua
 vim.api.nvim_create_autocmd("BufWritePost", {
-  pattern = "*.c",
+  pattern = {"*.c", "*.h"},
   callback = function()
     require('norminette-checker').NormiCheck()
   end,
