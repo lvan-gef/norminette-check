@@ -129,6 +129,8 @@ normi.NormiClear = function()
 	if name == nil then
 		return
 	end
+
+    qf.clear_errors(plug_id, name)
 end
 
 --- clear all norminette errors from the qf-list
