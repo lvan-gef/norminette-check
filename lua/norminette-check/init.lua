@@ -104,13 +104,13 @@ normi.NormiCheck = function()
     end
 
     if ext == "c" or ext == "h" then
-        local errors = parseNormi(path)
-        if errors == nil then
+        local norm_found = parseNormi(path)
+        if norm_found == nil then -- there was a error
             normi.NormiClear()
             return
         end
 
-        qf.append_errors(errors, plug_id, name)
+        qf.append_errors(norm_found, plug_id, name)
     end
 end
 
