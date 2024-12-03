@@ -110,7 +110,7 @@ normi.NormiCheck = function()
             return
         end
 
-        qf.append_errors(norm_found, plug_id, name)
+        qf.append_errors(name, plug_id, norm_found)
     end
 end
 
@@ -130,7 +130,7 @@ normi.NormiClear = function()
         return
     end
 
-    qf.clear_errors(plug_id, name)
+    qf.clear_errors(name, plug_id)
 end
 
 --- clear all norminette errors from the qf-list

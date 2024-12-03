@@ -9,10 +9,10 @@ local function get_pattern(name, plug_id)
 end
 
 --- Append errors to the quickfix list with a unique plugin identifier.
---- @param err_list table  A list of error entries to append.
---- @param plug_id  string The unique identifier for the plugin.
 --- @param name     string The filename without extension
-qf.append_errors = function(err_list, plug_id, name)
+--- @param plug_id  string The unique identifier for the plugin.
+--- @param err_list table  A list of error entries to append.
+qf.append_errors = function(name, plug_id, err_list)
     qf.clear_errors(plug_id, name)
 
     for _, entry in ipairs(err_list) do
@@ -22,9 +22,9 @@ qf.append_errors = function(err_list, plug_id, name)
 end
 
 --- Clear errors from the quickfix list given the filename
---- @param plug_id string The unique identifier for the plugin.
 --- @param name    string The filename without extension
-qf.clear_errors = function(plug_id, name)
+--- @param plug_id string The unique identifier for the plugin.
+qf.clear_errors = function(name, plug_id)
     local cur_qflist = vim.fn.getqflist()
     local new_qflist = {}
 
