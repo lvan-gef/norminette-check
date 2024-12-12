@@ -69,16 +69,10 @@ local parseNormi = function(path)
     end
 
     if status == 0 and #errors == 0 then
-        vim.api.nvim_echo({ { "Norminette is Happy", "InfoMsg" } }, true, {})
         return nil
     end
 
-    if status == 0 and #errors ~= 0 then
-        vim.api.nvim_echo(
-            { { "Norminette exit code: " .. status .. ".\nBut we have " .. #errors .. "error's", "ErrorMsg" } }, true, {})
-        return nil
-    end
-
+    vim.api.nvim_echo({ { "Norminette Error", "ErrorMsg" } }, true, {})
     return errors
 end
 
