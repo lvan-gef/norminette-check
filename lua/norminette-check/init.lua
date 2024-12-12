@@ -69,7 +69,7 @@ local parseNormi = function(path)
     end
 
     if status == 0 and #errors == 0 then
-        return nil
+        return {}
     end
 
     vim.api.nvim_echo({ { "Norminette Error", "ErrorMsg" } }, true, {})
@@ -100,6 +100,10 @@ normi.NormiCheck = function()
     if ext == "c" or ext == "h" then
         local norm_found = parseNormi(path)
         if norm_found == nil then -- there was a error
+            normi.NormiClear()
+            return
+        elseif norm_found == {} then  -- no norminette error
+            vim.api.nvim_echo({ { "Norminette", "ErrorMsg" } }, true, {})
             normi.NormiClear()
             return
         end
