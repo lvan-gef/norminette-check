@@ -9,11 +9,11 @@ local function get_pattern(name, plug_id)
 end
 
 --- Append errors to the quickfix list with a unique plugin identifier.
---- @param name     string The filename without extension
---- @param plug_id  string The unique identifier for the plugin.
---- @param err_list table  A list of error entries to append.
+---@param name string The filename without extension
+---@param plug_id string The unique identifier for the plugin
+---@param err_list table List of error entries to append
 qf.append_errors = function(name, plug_id, err_list)
-    qf.clear_errors(plug_id, name)
+    qf.clear_errors(name, plug_id)
 
     for _, entry in ipairs(err_list) do
         entry.text = entry.text .. " [" .. get_pattern(name, plug_id)
