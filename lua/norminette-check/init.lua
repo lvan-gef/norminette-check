@@ -20,7 +20,7 @@ normi.setup = function(opts)
     options = opts
 end
 
---- Run's norminette and parse norminette
+--- Run's norminette and parse it
 --- @param path string  Path to the file you want to check
 --- @return table | nil
 local parseNormi = function(path)
@@ -69,7 +69,7 @@ local parseNormi = function(path)
     end
 
     if status == 0 and #errors == 0 then
-        return {}
+        return {}  -- norminette have no errors
     end
 
     vim.api.nvim_echo({ { "Norminette Error", "ErrorMsg" } }, true, {})
@@ -102,8 +102,7 @@ normi.NormiCheck = function()
         if norm_found == nil then -- there was a error
             normi.NormiClear()
             return
-        elseif norm_found == {} then  -- no norminette error
-            vim.api.nvim_echo({ { "Norminette", "ErrorMsg" } }, true, {})
+        elseif #norm_found == 0 then  -- no norminette error
             normi.NormiClear()
             return
         end
