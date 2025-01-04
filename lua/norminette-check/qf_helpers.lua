@@ -12,13 +12,15 @@ end
 ---@param name     string: The filename without extension
 ---@param plug_id  string: The unique identifier for the plugin
 ---@param err_list table : List of error entries to append
-qf.append_errors = function(name, plug_id, err_list)
-  qf.clear_errors(name, plug_id)
+qf.set_errors = function(name, plug_id, err_list)
+  local new_qflist = {}
 
   for _, entry in ipairs(err_list) do
     entry.text = entry.text .. " [" .. get_pattern(name, plug_id)
-    vim.fn.setqflist({ entry }, "a")
+    table.insert(new_qflist, entry)
   end
+
+  vim.fn.setqflist(new_qflist, "r")
 end
 
 ---Clear errors from the quickfix list given the filename

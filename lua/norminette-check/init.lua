@@ -72,7 +72,7 @@ local parseNormi = function(path)
     return {} -- no norminette errors
   end
 
-  vim.api.nvim_echo({ { "Norminette Error", "ErrorMsg" } }, true, {})
+  vim.api.nvim_echo({ { "Found " .. #errors .. " Norminette errors", "ErrorMsg" } }, true, {})
   return errors
 end
 
@@ -107,7 +107,7 @@ normi.NormiCheck = function()
       return
     end
 
-    qf.append_errors(name, plug_id, norm_found)
+    qf.set_errors(name, plug_id, norm_found)
   end
 end
 
