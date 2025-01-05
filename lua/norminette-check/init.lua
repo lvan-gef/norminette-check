@@ -115,16 +115,6 @@ normi.NormiClear = function()
     return
   end
 
-  local path = vim.api.nvim_buf_get_name(0)
-  if path == "" then
-    return
-  end
-
-  local name = vim.fn.fnamemodify(path, ":t:r")
-  if name == nil then
-    return
-  end
-
   qf.clear_errors()
 end
 
