@@ -86,11 +86,6 @@ normi.NormiCheck = function()
     return
   end
 
-  local name = vim.fn.fnamemodify(path, ":t:r")
-  if name == nil then
-    return
-  end
-
   local ext = vim.fn.fnamemodify(path, ":e")
   if ext == nil then
     return
