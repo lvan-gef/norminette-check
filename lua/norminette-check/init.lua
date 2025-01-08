@@ -1,5 +1,4 @@
 local qf = require("norminette-check.qf_helpers")
-local plug_id = "norminette"
 local normi = {}
 
 ---default setting for the plugin
@@ -72,7 +71,7 @@ local parseNormi = function(path)
     return {} -- no norminette errors
   end
 
-  vim.api.nvim_echo({ { "Norminette Error", "ErrorMsg" } }, true, {})
+  vim.api.nvim_echo({ { "Found " .. #errors .. " Norminette errors", "ErrorMsg" } }, true, {})
   return errors
 end
 
@@ -87,27 +86,21 @@ normi.NormiCheck = function()
     return
   end
 
-  local name = vim.fn.fnamemodify(path, ":t:r")
-  if name == nil then
-    return
-  end
-
   local ext = vim.fn.fnamemodify(path, ":e")
   if ext == nil then
     return
   end
 
   if ext == "c" or ext == "h" then
-    local norm_found = parseNormi(path)
-    if norm_found == nil then -- there was a error
-      normi.NormiClear()
+    local norm_err_found = parseNormi(path)
+    if norm_err_found == nil then    -- there was a error in parsing
       return
-    elseif #norm_found == 0 then -- no norminette error
+    elseif #norm_err_found == 0 then -- no norminette error
       normi.NormiClear()
       return
     end
 
-    qf.append_errors(name, plug_id, norm_found)
+    qf.set_errors(norm_err_found)
   end
 end
 
@@ -117,26 +110,7 @@ normi.NormiClear = function()
     return
   end
 
-  local path = vim.api.nvim_buf_get_name(0)
-  if path == "" then
-    return
-  end
-
-  local name = vim.fn.fnamemodify(path, ":t:r")
-  if name == nil then
-    return
-  end
-
-  qf.clear_errors(name, plug_id)
-end
-
----clear all norminette errors from the qf-list
-normi.NormiClearAll = function()
-  if options.enable ~= true then
-    return
-  end
-
-  qf.clear_all_errors(plug_id)
+  qf.clear_errors()
 end
 
 ---Disable norminette-check
