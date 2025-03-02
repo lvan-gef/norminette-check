@@ -12,14 +12,13 @@ Norminette Check is a simple Neovim plugin that runs the Norminette linter on yo
 ## 📋 Requirements
 - Neovim **0.8+**
 - [Norminette](https://github.com/42School/norminette) installed and available in your `PATH`
-- Lua support enabled in Neovim
 
 ## 🛠 Installation
 ### Using [Lazy.nvim](https://github.com/folke/lazy.nvim)
 Add this to your Lazy.nvim plugin list:
 ```lua
 {
-  "your-github-username/norminette-check",
+  "lvan-gef/norminette-check",
   config = function()
     require("norminette-check").setup()
   end,
