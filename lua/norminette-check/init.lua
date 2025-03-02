@@ -126,7 +126,7 @@ local parseNormi = function(path, callback)
 end
 
 ---Check for norminette errors in the current buffer
----@return boolean: Return false when something whent wrong
+---@return boolean: Return false when something whent wrong otherwise true
 normi.NormiCheck = function()
   if options.enable ~= true then
     return false
