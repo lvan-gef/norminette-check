@@ -27,10 +27,13 @@ end
 local function handle_error(msg, callback, value)
   vim.schedule(function()
     vim.api.nvim_echo({ { msg, "ErrorMsg" } }, true, {})
-    if callback then
-      callback(value)
-    end
   end)
+
+  if callback then
+    vim.schedule(function ()
+      callback(value or {})
+    end)
+  end
 end
 
 ---Run's norminette and parse it
