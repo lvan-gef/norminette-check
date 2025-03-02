@@ -126,9 +126,10 @@ local parseNormi = function(path, callback)
 end
 
 ---Check for norminette errors in the current buffer
+---@return boolean: Return false when something whent wrong
 normi.NormiCheck = function()
   if options.enable ~= true then
-    return
+    return false
   end
 
   if debounce_timer then
@@ -138,22 +139,25 @@ normi.NormiCheck = function()
   debounce_timer = vim.defer_fn(function()
     local path = vim.api.nvim_buf_get_name(0)
     if path == "" then
-      return
+      return false
     end
 
     local ext = vim.fn.fnamemodify(path, ":e")
     if ext == "c" or ext == "h" then
       parseNormi(path, function(errors)
         if errors == nil then
-          return
+          return false
         elseif #errors == 0 then
           normi.NormiClear()
-          return
+          return true
         end
         qf.set_errors(errors)
+        return true
       end)
     end
   end, 300)
+
+  return true
 end
 
 ---clear norminette errors from the qf-list given the current buffer
