@@ -43,13 +43,8 @@ local parseNormi = function(path, callback)
   local stdout, _, _ = uv.new_pipe(false)
   local stderr, _, _ = uv.new_pipe(false)
 
-  if not stdout then
-    handle_error("Failed to create stdout pipe for norminette", callback, nil)
-    return
-  end
-
-  if not stderr then
-    handle_error("Failed to create stderr pipe for norminette", callback, nil)
+  if not stdout or not stderr then
+    handle_error("Failed to create pipes for norminette", callback, nil)
     return
   end
 
