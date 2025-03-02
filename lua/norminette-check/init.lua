@@ -23,7 +23,7 @@ end
 ---Handle errors
 ---@param msg string: The message that should be printed
 ---@param callback function: Function to call add the end
----@param value table|nil: The value to use for the callback
+---@param value table | nil: The value to use for the callback
 local function handle_error(msg, callback, value)
   vim.schedule(function()
     vim.api.nvim_echo({ { msg, "ErrorMsg" } }, true, {})
