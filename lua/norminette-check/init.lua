@@ -26,7 +26,7 @@ local parseNormi = function(path)
   local output = vim.fn.system("norminette " .. vim.fn.shellescape(path) .. " 2>&1")
   local status = vim.v.shell_error
 
-  if status == 127 then  -- on my mac there is something wrong with norminette and it will return 1, so maybe handle it also here?
+  if status == 127 then
     vim.api.nvim_echo({ { "Norminette is not on PATH", "ErrorMsg" } }, true, {})
     return nil
   end
