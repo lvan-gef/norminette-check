@@ -1,4 +1,6 @@
 local qf = require("norminette-check.qf_helpers")
+local uv = vim.uv or vim.loop
+local debounce_timer
 local normi = {}
 
 ---default setting for the plugin
@@ -19,97 +21,147 @@ normi.setup = function(opts)
   options = opts
 end
 
+---Handle errors
+---@param msg string: The message that should be printed
+---@param callback function: Function to call add the end
+---@param value table | nil: The value to use for the callback
+local function handle_error(msg, callback, value)
+  vim.schedule(function()
+    vim.notify(msg, vim.log.levels.ERROR, nil);
+  end)
+
+  if callback then
+    vim.schedule(function()
+      callback(value or {})
+    end)
+  end
+end
+
 ---Run's norminette and parse it
 ---@param path string: Path to the file you want to check
----@return table | nil
-local parseNormi = function(path)
-  local output = vim.fn.system("norminette " .. vim.fn.shellescape(path) .. " 2>&1")
-  local status = vim.v.shell_error
+---@param callback function: function to call add the end
+local parseNormi = function(path, callback)
+  local stdout, _, _ = uv.new_pipe(false)
+  local stderr, _, _ = uv.new_pipe(false)
 
-  if status == 127 then
-    vim.api.nvim_echo({ { "Norminette is not on PATH", "ErrorMsg" } }, true, {})
-    return nil
+  if not stdout or not stderr then
+    handle_error("Failed to create pipes for norminette", callback, nil)
+    return
   end
 
-  output = output:gsub("\r\n", "\n"):gsub("\r", "\n")
-  local errors = {}
-  for line in output:gmatch("[^\n]+") do
-    if not line:match("^Error") and not line:match("^Notice") then
-      goto continue
+  local handle
+  ---@diagnostic disable-next-line: missing-fields
+  handle, _ = uv.spawn("norminette", {
+    args = { path },
+    stdio = { nil, stdout, stderr },
+  }, function(code, _)
+    stdout:close()
+    stderr:close()
+    handle:close()
+
+    if code == 127 then
+      handle_error("Norminette is not on PATH", callback, nil)
+      return
     end
+  end)
 
-    local lnum, col, txt = line:match(".*line: *(%d+), col: *(%d+).*:\t(.*)")
-
-    local lnum_int = tonumber(lnum)
-    if lnum_int == nil then
-      vim.api.nvim_echo({ { "Parser Error: Not a valid line number: " .. line, "ErrorMsg" } }, true, {})
-      return nil
-    end
-
-    local col_int = tonumber(col)
-    if lnum_int == nil then
-      vim.api.nvim_echo({ { "Parser Error: Not a valid col number: " .. line, "ErrorMsg" } }, true, {})
-      return nil
-    end
-
-    if txt == nil then
-      vim.api.nvim_echo({ { "Parser Error: No message by a error: " .. line, "ErrorMsg" } }, true, {})
-      return nil
-    end
-
-    table.insert(errors, {
-      filename = path,
-      lnum = lnum_int,
-      col = col_int,
-      text = txt,
-    })
-
-    ::continue::
+  if not handle then
+    handle_error("Failed to create a handler for norminette", callback, nil)
+    return
   end
 
-  if status == 0 and #errors == 0 then
-    return {} -- no norminette errors
-  end
+  local output = {}
+  stdout:read_start(function(err, data)
+    if err then
+      return
+    end
 
-  vim.api.nvim_echo({ { "Found " .. #errors .. " Norminette errors", "ErrorMsg" } }, true, {})
-  return errors
+    if data then
+      table.insert(output, data)
+    else
+      local errors = {}
+      local result = table.concat(output):gsub("\r\n", "\n"):gsub("\r", "\n")
+
+      for line in result:gmatch("[^\n]+") do
+        if line:match("^Error") or line:match("^Notice") then
+          local lnum, col, txt = line:match(".*line: *(%d+), col: *(%d+).*:\t(.*)")
+          if not lnum or not col or not txt then
+            handle_error("Parse Error: Invalid format: " .. line, callback, nil)
+            return
+          end
+
+          local lnum_int = tonumber(lnum)
+          if lnum_int == nil then
+            handle_error("Parser Error: Not a valid line number: " .. line, callback, nil)
+            return
+          end
+
+          local col_int = tonumber(col)
+          if col_int == nil then
+            handle_error("Parser Error: Not a valid col number: " .. line, callback, nil)
+            return
+          end
+
+          if txt == nil then
+            handle_error("Parser Error: No message by a error: " .. line, callback, nil)
+            return
+          end
+
+          table.insert(errors, {
+            filename = path,
+            lnum = lnum_int,
+            col = col_int,
+            text = txt,
+          })
+        end
+      end
+
+      if #errors == 0 then
+        callback({})
+      else
+        handle_error("Found " .. #errors .. " Norminette errors", callback, errors)
+      end
+    end
+  end)
 end
 
 ---Check for norminette errors in the current buffer
+---@return boolean: Return false when something whent wrong
 normi.NormiCheck = function()
   if options.enable ~= true then
-    return
+    return false
   end
 
-  local path = vim.api.nvim_buf_get_name(0)
-  if path == "" then
-    return
+  if debounce_timer then
+    debounce_timer:stop()
   end
 
-  local ext = vim.fn.fnamemodify(path, ":e")
-  if ext == nil then
-    return
-  end
-
-  if ext == "c" or ext == "h" then
-    local norm_err_found = parseNormi(path)
-    if norm_err_found == nil then    -- there was a error in parsing
-      return
-    elseif #norm_err_found == 0 then -- no norminette error
-      normi.NormiClear()
-      return
+  debounce_timer = vim.defer_fn(function()
+    local path = vim.api.nvim_buf_get_name(0)
+    if path == "" then
+      return false
     end
 
-    qf.set_errors(norm_err_found)
-  end
+    local ext = vim.fn.fnamemodify(path, ":e")
+    if ext == "c" or ext == "h" then
+      parseNormi(path, function(errors)
+        if errors == nil then
+          return false
+        elseif #errors == 0 then
+          normi.NormiClear()
+          return true
+        end
+        qf.set_errors(errors)
+        return true
+      end)
+    end
+  end, 300)
+
+  return true
 end
 
 ---clear norminette errors from the qf-list given the current buffer
 normi.NormiClear = function()
-  if options.enable ~= true then
-    return
-  end
-
   qf.clear_errors()
 end
 
