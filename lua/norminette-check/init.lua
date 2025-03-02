@@ -1,5 +1,6 @@
 local qf = require("norminette-check.qf_helpers")
 local uv = vim.uv or vim.loop
+local debounce_timer
 local normi = {}
 
 ---default setting for the plugin
@@ -130,23 +131,29 @@ normi.NormiCheck = function()
     return
   end
 
-  local path = vim.api.nvim_buf_get_name(0)
-  if path == "" then
-    return
+  if debounce_timer then
+    debounce_timer:stop()
   end
 
-  local ext = vim.fn.fnamemodify(path, ":e")
-  if ext == "c" or ext == "h" then
-    parseNormi(path, function(errors)
-      if errors == nil then
-        return
-      elseif #errors == 0 then
-        normi.NormiClear()
-        return
-      end
-      qf.set_errors(errors)
-    end)
-  end
+  debounce_timer = vim.defer_fn(function()
+    local path = vim.api.nvim_buf_get_name(0)
+    if path == "" then
+      return
+    end
+
+    local ext = vim.fn.fnamemodify(path, ":e")
+    if ext == "c" or ext == "h" then
+      parseNormi(path, function(errors)
+        if errors == nil then
+          return
+        elseif #errors == 0 then
+          normi.NormiClear()
+          return
+        end
+        qf.set_errors(errors)
+      end)
+    end
+  end, 300)
 end
 
 ---clear norminette errors from the qf-list given the current buffer
