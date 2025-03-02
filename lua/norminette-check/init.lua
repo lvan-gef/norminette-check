@@ -30,7 +30,7 @@ local function handle_error(msg, callback, value)
   end)
 
   if callback then
-    vim.schedule(function ()
+    vim.schedule(function()
       callback(value or {})
     end)
   end
@@ -87,37 +87,37 @@ local parseNormi = function(path, callback)
       local result = table.concat(output):gsub("\r\n", "\n"):gsub("\r", "\n")
 
       for line in result:gmatch("[^\n]+") do
-        if not line:match("^Error") and not line:match("^Notice") then
-          goto continue
+        if line:match("^Error") or line:match("^Notice") then
+          local lnum, col, txt = line:match(".*line: *(%d+), col: *(%d+).*:\t(.*)")
+          if not lnum or not col or not txt then
+            handle_error("Parse Error: Invalid format: " .. line, callback, nil)
+            return
+          end
+
+          local lnum_int = tonumber(lnum)
+          if lnum_int == nil then
+            handle_error("Parser Error: Not a valid line number: " .. line, callback, nil)
+            return
+          end
+
+          local col_int = tonumber(col)
+          if col_int == nil then
+            handle_error("Parser Error: Not a valid col number: " .. line, callback, nil)
+            return
+          end
+
+          if txt == nil then
+            handle_error("Parser Error: No message by a error: " .. line, callback, nil)
+            return
+          end
+
+          table.insert(errors, {
+            filename = path,
+            lnum = lnum_int,
+            col = col_int,
+            text = txt,
+          })
         end
-
-        local lnum, col, txt = line:match(".*line: *(%d+), col: *(%d+).*:\t(.*)")
-
-        local lnum_int = tonumber(lnum)
-        if lnum_int == nil then
-          handle_error("Parser Error: Not a valid line number: " .. line, callback, nil)
-          return
-        end
-
-        local col_int = tonumber(col)
-        if col_int == nil then
-          handle_error("Parser Error: Not a valid col number: " .. line, callback, nil)
-          return
-        end
-
-        if txt == nil then
-          handle_error("Parser Error: No message by a error: " .. line, callback, nil)
-          return
-        end
-
-        table.insert(errors, {
-          filename = path,
-          lnum = lnum_int,
-          col = col_int,
-          text = txt,
-        })
-
-        ::continue::
       end
 
       if #errors == 0 then
