@@ -26,7 +26,7 @@ end
 ---@param value table | nil: The value to use for the callback
 local function handle_error(msg, callback, value)
   vim.schedule(function()
-    vim.api.nvim_echo({ { msg, "ErrorMsg" } }, true, {})
+    vim.notify(msg, vim.log.levels.ERROR, nil);
   end)
 
   if callback then
