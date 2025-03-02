@@ -1,70 +1,66 @@
-# Norminette Checker for Neovim
+# Norminette Check
 
-## Overview
+Norminette Check is a simple Neovim plugin that runs the Norminette linter on your C and header files, highlighting errors directly in the quickfix list. It helps you stay compliant with the Norminette style guide effortlessly!
 
-This plugin integrates Norminette, the coding style checker used in 42 schools, into your Neovim. It allows you to run Norminette on your .c or .h file without leaving your editor, displaying results conveniently in Neovim's quickfix list.
+## 🚀 Features
+- Runs Norminette on `.c` and `.h` files.
+- Displays errors and notices in the quickfix list.
+- Supports enabling/disabling checks dynamically.
+- Provides user commands for easy usage.
+- Uses debouncing to prevent unnecessary multiple runs.
 
-## Features
+## 📋 Requirements
+- Neovim **0.8+**
+- [Norminette](https://github.com/42School/norminette) installed and available in your `PATH`
+- Lua support enabled in Neovim
 
-- Execute Norminette on the current buffer with a simple command
-- View Norminette errors directly in Neovim's quickfix list
-- Clear Norminette errors for the current buffer or all buffers
-- Optional automatic checks on file save
-- Enable or Disable the checker
-
-## Requirements
-
-- Neovim 0.9.0 or later
-- Norminette installed and accessible in your PATH
-
-## Installation
-
-Using [lazy.nvim](https://github.com/folke/lazy.nvim):
-
+## 🛠 Installation
+### Using [Lazy.nvim](https://github.com/folke/lazy.nvim)
+Add this to your Lazy.nvim plugin list:
 ```lua
 {
-  'lvan-gef/norminette-checker',
+  "your-github-username/norminette-check",
   config = function()
-    require('norminette-checker').setup()
-  end
+    require("norminette-check").setup()
+  end,
 }
 ```
 
-## Usage
+## 📖 Usage
+### Running Norminette Check
+You can manually check for Norminette errors with:
+```vim
+:NormiCheck
+```
+This will run the linter on the current buffer and update the quickfix list.
 
-The plugin provides the following Lua functions:
-
-- `require('norminette-checker').NormiCheck()`   : Run Norminette on the current buffer
-- `require('norminette-checker').NormiClear()`   : Clear Norminette errors for the current buffer
-- `require('norminette-checker').NormiClearAll()`: Clear all Norminette errors
-- `require('norminette-checker').NormiEnable()`  : Enable checker
-- `require('norminette-checker').NormiDisable()` : Disable checker
-
-You can map these functions to keyboard shortcuts in your Neovim configuration:
-
-```lua
-vim.api.nvim_set_keymap('n', '<leader>nc', "<cmd>lua require('norminette-checker').NormiCheck()<CR>", { noremap = true, silent = true, desc = "[N]ormi [C]heck" }
-vim.api.nvim_set_keymap('n', '<leader>nr', "<cmd>lua require('norminette-checker').NormiClear()<CR>", { noremap = true, silent = true, desc = "[N]ormi [R]emove" }
-vim.api.nvim_set_keymap('n', '<leader>nra', "<cmd>lua require('norminette-checker').NormiClearAll()<CR>", { noremap = true, silent = true, desc = "[N]ormi [R]emove [A]ll" }
-vim.api.nvim_set_keymap('n', '<leader>ne', "<cmd>lua require('norminette-checker').NormiEnable()<CR>", { noremap = true, silent = true, desc = "[N]ormi [E]nable" }
-vim.api.nvim_set_keymap('n', '<leader>nd', "<cmd>lua require('norminette-checker').NormiDisable()<CR>", { noremap = true, silent = true, desc = "[N]ormi [D]isable" }
+### Clearing Errors
+To clear Norminette errors from the quickfix list:
+```vim
+:NormiClear
 ```
 
-## Autorun on Save
+### Enabling/Disabling the Plugin
+- Disable automatic checking:
+  ```vim
+  :NormiDisable
+  ```
+- Enable it again:
+  ```vim
+  :NormiEnable
+  ```
 
-To automatically run Norminette when you save a file, add the following to your Neovim configuration:
-
+### Auto-run on Save
+To automatically run Norminette whenever you save a file, add this to your Neovim config:
 ```lua
 vim.api.nvim_create_autocmd("BufWritePost", {
   pattern = {"*.c", "*.h"},
-  callback = function()
-    require('norminette-checker').NormiCheck()
-  end,
+  command = "NormiCheck",
 })
 ```
 
-This will run the Norminette every time you save a `.c` or `.h` file.
+## 🤝 Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.=
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 📜 License
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
