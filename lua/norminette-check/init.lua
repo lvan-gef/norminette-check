@@ -1,6 +1,6 @@
 local qf = require("norminette-check.qf_helpers")
-local normi = {}
 local uv = vim.uv or vim.loop
+local normi = {}
 
 ---default setting for the plugin
 local options = {
@@ -20,9 +20,35 @@ normi.setup = function(opts)
   options = opts
 end
 
+---Handle errors
+---@param msg string: The message that should be printed
+---@param callback function: Function to call add the end
+---@param value table|nil: The value to use for the callback
+local function handle_error(msg, callback, value)
+  vim.schedule(function()
+    vim.api.nvim_echo({ { msg, "ErrorMsg" } }, true, {})
+    if callback then
+      callback(value)
+    end
+  end)
+end
+
+---Run's norminette and parse it
+---@param path string: Path to the file you want to check
+---@param callback function: function to call add the end
 local parseNormi = function(path, callback)
-  local stdout = vim.loop.new_pipe(false)
-  local stderr = vim.loop.new_pipe(false)
+  local stdout, _, _ = uv.new_pipe(false)
+  local stderr, _, _ = uv.new_pipe(false)
+
+  if not stdout then
+    handle_error("Failed to create stdout pipe for norminette", callback, nil)
+    return
+  end
+
+  if not stderr then
+    handle_error("Failed to create stderr pipe for norminette", callback, nil)
+    return
+  end
 
   local handle
   ---@diagnostic disable-next-line: missing-fields
@@ -30,58 +56,20 @@ local parseNormi = function(path, callback)
     args = { path },
     stdio = { nil, stdout, stderr },
   }, function(code, _)
-    if stdout then
-      stdout:close()
-    end
-
-    if stderr then
-      stderr:close()
-    end
-
-    if handle then
-      handle:close()
-    end
-
-    if not stdout then
-      vim.schedule(function()
-        vim.api.nvim_echo({ { "Failed to create stdout pipe for norminette", "ErrorMsg" } }, true, {})
-      end)
-      callback(nil)
-      return
-    end
-
-    if not stderr then
-      vim.schedule(function()
-        vim.api.nvim_echo({ { "Failed to create stderr pipe for norminette", "ErrorMsg" } }, true, {})
-      end)
-      callback(nil)
-      return
-    end
-
     if not handle then
-      vim.schedule(function()
-        vim.api.nvim_echo({ { "Failed to create a handler for norminette", "ErrorMsg" } }, true, {})
-      end)
-      callback(nil)
+      handle_error("Failed to create a handler for norminette", callback, nil)
       return
     end
+
+    stdout:close()
+    stderr:close()
+    handle:close()
 
     if code == 127 then
-      vim.schedule(function()
-        vim.api.nvim_echo({ { "Norminette is not on PATH", "ErrorMsg" } }, true, {})
-      end)
-      callback(nil)
+      handle_error("Norminette is not on PATH", callback, nil)
       return
     end
   end)
-
-  if not stdout then
-      vim.schedule(function()
-        vim.api.nvim_echo({ { "Failed to create stdout pipe for norminette", "ErrorMsg" } }, true, {})
-      end)
-      callback(nil)
-      return
-  end
 
   local output = {}
   stdout:read_start(function(err, data)
@@ -101,29 +89,21 @@ local parseNormi = function(path, callback)
         end
 
         local lnum, col, txt = line:match(".*line: *(%d+), col: *(%d+).*:\t(.*)")
+
         local lnum_int = tonumber(lnum)
         if lnum_int == nil then
-          vim.schedule(function()
-            vim.api.nvim_echo({ { "Parser Error: Not a valid line number: " .. line, "ErrorMsg" } }, true, {})
-          end)
-          callback(nil)
+          handle_error("Parser Error: Not a valid line number: " .. line, callback, nil)
           return
         end
 
         local col_int = tonumber(col)
         if lnum_int == nil then
-          vim.schedule(function()
-            vim.api.nvim_echo({ { "Parser Error: Not a valid col number: " .. line, "ErrorMsg" } }, true, {})
-          end)
-          callback(nil)
+          handle_error("Parser Error: Not a valid col number: " .. line, callback, nil)
           return
         end
 
         if txt == nil then
-          vim.schedule(function()
-            vim.api.nvim_echo({ { "Parser Error: No message by a error: " .. line, "ErrorMsg" } }, true, {})
-          end)
-          callback(nil)
+          handle_error("Parser Error: No message by a error: " .. line, callback, nil)
           return
         end
 
@@ -137,14 +117,11 @@ local parseNormi = function(path, callback)
         ::continue::
       end
 
-      vim.schedule(function()
-        if #errors == 0 then
-          callback({})
-        else
-          vim.api.nvim_echo({ { "Found " .. #errors .. " Norminette errors", "ErrorMsg" } }, true, {})
-          callback(errors)
-        end
-      end)
+      if #errors == 0 then
+        callback({})
+      else
+        handle_error("Found " .. #errors .. " Norminette errors", callback, errors)
+      end
     end
   end)
 end
