@@ -156,10 +156,6 @@ end
 
 ---clear norminette errors from the qf-list given the current buffer
 normi.NormiClear = function()
-  if options.enable ~= true then
-    return
-  end
-
   qf.clear_errors()
 end
 
