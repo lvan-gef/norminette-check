@@ -100,7 +100,7 @@ local parseNormi = function(path, callback)
         end
 
         local col_int = tonumber(col)
-        if lnum_int == nil then
+        if col_int == nil then
           handle_error("Parser Error: Not a valid col number: " .. line, callback, nil)
           return
         end
