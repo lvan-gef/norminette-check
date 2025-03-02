@@ -2,6 +2,10 @@ vim.api.nvim_create_user_command("NormiCheck", function()
   require("norminette-check").NormiCheck()
 end, {})
 
+vim.api.nvim_create_user_command("NormiPathCheck", function ()
+  require("norminette-check").NormiPathCheck()
+end, {})
+
 vim.api.nvim_create_user_command("NormiClear", function()
   require("norminette-check").NormiClear()
 end, {})

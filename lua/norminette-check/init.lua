@@ -1,11 +1,13 @@
 local qf = require("norminette-check.qf_helpers")
+local helper = require("norminette-check.helpers")
 local uv = vim.uv or vim.loop
 local debounce_timer
 local normi = {}
 
 ---default setting for the plugin
 local options = {
-  enable = true
+  enable = true,
+  paths = {}
 }
 
 ---Merge user settings with defaults
@@ -156,6 +158,29 @@ normi.NormiCheck = function()
       end)
     end
   end, 300)
+
+  return true
+end
+
+---Check all files in a given path
+---@return boolean: Return false when something whent wrong otherwise true
+normi.NormiPathCheck = function()
+  local files_as_string = ""
+  if next(options.paths) == nil then
+    local new_path = helper.prompt_for_path()
+    options.paths[new_path] = {}
+    for key, list in pairs(options.paths) do
+      local files = helper.get_all_files(key)
+
+      if files and #files > 0 then
+        for _, file in ipairs(files) do
+          files_as_string = files_as_string .. " " .. file
+        end
+      end
+      -- helper.add_files(list, files)
+    end
+  end
+
 
   return true
 end
