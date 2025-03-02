@@ -59,11 +59,6 @@ local parseNormi = function(path, callback)
     args = { path },
     stdio = { nil, stdout, stderr },
   }, function(code, _)
-    if not handle then
-      handle_error("Failed to create a handler for norminette", callback, nil)
-      return
-    end
-
     stdout:close()
     stderr:close()
     handle:close()
@@ -73,6 +68,11 @@ local parseNormi = function(path, callback)
       return
     end
   end)
+
+  if not handle then
+    handle_error("Failed to create a handler for norminette", callback, nil)
+    return
+  end
 
   local output = {}
   stdout:read_start(function(err, data)
