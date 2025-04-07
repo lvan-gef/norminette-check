@@ -1,24 +1,13 @@
 local qf = require("norminette-check.qf_helpers")
 local uv = vim.uv or vim.loop
 local debounce_timer
-local normi = {}
+local normi = {options = {enable = true}}
 
----default setting for the plugin
-local options = {
-  enable = true
-}
 
 ---Merge user settings with defaults
 ---@param opts table: The default options
-normi.setup = function(opts)
-  opts = opts or {}
-  for k, v in pairs(options) do
-    if opts[k] == nil then
-      opts[k] = v
-    end
-  end
-
-  options = opts
+function normi.setup(opts)
+  normi.options = vim.tbl_deep_extend('force', normi.options, opts or {})
 end
 
 ---Handle errors
