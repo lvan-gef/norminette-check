@@ -117,7 +117,7 @@ end
 ---Check for norminette errors in the current buffer
 ---@return boolean: Return false when something whent wrong
 normi.NormiCheck = function()
-  if options.enable ~= true then
+  if normi.options.enable ~= true then
     return false
   end
 
@@ -156,12 +156,12 @@ end
 
 ---Disable norminette-check
 normi.NormiDisable = function()
-  options.enable = false
+  normi.options.enable = false
 end
 
 ---Enable norminette-check
 normi.NormiEnable = function()
-  options.enable = true
+  normi.options.enable = true
 end
 
 return normi
