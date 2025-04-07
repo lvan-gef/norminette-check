@@ -1,7 +1,7 @@
 local qf = require("norminette-check.qf_helpers")
 local uv = vim.uv or vim.loop
 local debounce_timer
-local normi = {options = {enable = true}}
+local normi = { options = { enable = true } }
 
 
 ---Merge user settings with defaults
