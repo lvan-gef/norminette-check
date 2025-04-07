@@ -3,6 +3,7 @@ local qf = {}
 ---Set the errors to the qf-list
 ---@param err_list table : List of error entries to append
 qf.set_errors = function(err_list)
+  vim.schedule(function ()
   local new_qflist = {}
 
   for _, entry in ipairs(err_list) do
@@ -11,6 +12,7 @@ qf.set_errors = function(err_list)
   end
 
   vim.fn.setqflist(new_qflist, "r")
+  end)
 end
 
 ---Clear errors from the quickfix list given the plugin id
