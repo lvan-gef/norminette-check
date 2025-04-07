@@ -3,7 +3,6 @@ local uv = vim.uv or vim.loop
 local debounce_timer
 local normi = { options = { enable = true } }
 
-
 ---Merge user settings with defaults
 ---@param opts table: The default options
 function normi.setup(opts)
