@@ -72,7 +72,7 @@ local parseNormi = function(path, callback)
 
       for line in result:gmatch("[^\n]+") do
         if line:match("^Error") or line:match("^Notice") then
-          local lnum, col, txt = line:match(".*line: *(%d+), col: *(%d+).*:\t(.*)")
+          local type, lnum, col, txt = line:match("^(%a+):.*line: *(%d+), col: *(%d+).*:%s+(.*)")
           if not lnum or not col or not txt then
             handle_error("Parse Error: Invalid format: " .. line, callback, nil)
             return
@@ -95,11 +95,13 @@ local parseNormi = function(path, callback)
             return
           end
 
+          local qf_type = type == "Error" and 'E' or 'W'
           table.insert(errors, {
             filename = path,
             lnum = lnum_int,
             col = col_int,
             text = txt,
+            type = qf_type,
           })
         end
       end
