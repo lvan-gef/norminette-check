@@ -1,6 +1,6 @@
 # Norminette Check
 
-Norminette Check is a simple Neovim plugin that runs the Norminette linter on your C and header files, highlighting errors directly in the quickfix list. It helps you stay compliant with the Norminette style guide effortlessly!
+Norminette Check is a simple Neovim plugin that runs the Norminette on your C and header files, highlighting errors directly in the quickfix list. It helps you stay compliant with the Norminette style guide effortlessly!
 
 ## Features
 - Runs Norminette on `.c` and `.h` files.
@@ -53,7 +53,6 @@ To clear Norminette errors from the quickfix list:
 To automatically run Norminette whenever you save a file, add this to your Neovim config:
 ```lua
 vim.api.nvim_create_autocmd("BufWritePost", {
-  pattern = {"*.c", "*.h"},
   command = "NormiCheck",
 })
 ```
