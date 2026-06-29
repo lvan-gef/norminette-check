@@ -2,18 +2,18 @@
 
 Norminette Check is a simple Neovim plugin that runs the Norminette linter on your C and header files, highlighting errors directly in the quickfix list. It helps you stay compliant with the Norminette style guide effortlessly!
 
-## 🚀 Features
+## Features
 - Runs Norminette on `.c` and `.h` files.
 - Displays errors and notices in the quickfix list.
 - Supports enabling/disabling checks dynamically.
 - Provides user commands for easy usage.
 - Uses debouncing to prevent unnecessary multiple runs.
 
-## 📋 Requirements
+## Requirements
 - Neovim **0.8+**
 - [Norminette](https://github.com/42School/norminette) installed and available in your `PATH`
 
-## 🛠 Installation
+## Installation
 ### Using [Lazy.nvim](https://github.com/folke/lazy.nvim)
 Add this to your Lazy.nvim plugin list:
 ```lua
@@ -25,7 +25,7 @@ Add this to your Lazy.nvim plugin list:
 }
 ```
 
-## 📖 Usage
+## Usage
 ### Running Norminette Check
 You can manually check for Norminette errors with:
 ```vim
@@ -58,8 +58,8 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 })
 ```
 
-## 🤝 Contributing
+## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📜 License
+## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
